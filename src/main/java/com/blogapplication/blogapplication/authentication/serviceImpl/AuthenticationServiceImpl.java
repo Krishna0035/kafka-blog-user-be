@@ -63,7 +63,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public ResponseDto loginWithPassword(LoginDto loginDto) {
-        validateLoginRequestData(loginDto);
+//        validateLoginRequestData(loginDto);
 
 
         Optional<User> existedUserOptional = userRepository.findByEmail(loginDto.getUsername());
@@ -83,7 +83,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         ResponseDto responseDto = this.getJwtToken(existedUser, loginDto);
 
         LoginLogDto loginLogDto = LoginLogDto.builder()
-                .loginAt(LocalDateTime.now())
+                .loginAt(LocalDateTime.now().toString())
                 .channel(loginDto.getChannel())
                 .id(existedUser.getId())
                                 .build();

@@ -1,12 +1,13 @@
 package com.blogapplication.blogapplication.kafka.dto;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.google.gson.annotations.SerializedName;
+        import lombok.AllArgsConstructor;
+        import lombok.Builder;
+        import lombok.Data;
+        import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+        import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -14,10 +15,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class LoginLogDto {
 
-
+    @SerializedName("id")
     private Long id;
 
-    private LocalDateTime loginAt;
+    @SerializedName("loginAt")
+    private String loginAt;
 
+    @SerializedName("channel")
     private String channel;
 }
