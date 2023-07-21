@@ -5,6 +5,8 @@ import com.blogapplication.blogapplication.common.dto.responsedtos.GetUserRespon
 import com.blogapplication.blogapplication.common.exceptiom.ServiceException;
 import com.blogapplication.blogapplication.common.utility.AuthenticationUtil;
 import com.blogapplication.blogapplication.common.utility.CommonUtils;
+import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
+import com.blogapplication.blogapplication.kafka.dto.RegisterUserLogDto;
 import com.blogapplication.blogapplication.user.dto.CreateUserRequestDto;
 import com.blogapplication.blogapplication.user.entity.User;
 import com.blogapplication.blogapplication.user.repository.UserRepository;
@@ -33,6 +35,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AuthenticationUtil authenticationUtil;
 
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
 
     @Override
     public ResponseDto createUser(CreateUserRequestDto createUserRequestDto) {
@@ -46,7 +51,17 @@ public class UserServiceImpl implements UserService {
         newUser.setProfileId(this.getProfileId());
         newUser.setStatus(Integer.parseInt(environment.getProperty("active")));
 
-        userRepository.save(newUser);
+        User savedUser = userRepository.save(newUser);
+
+        RegisterUserLogDto registerUserLogDto = RegisterUserLogDto.builder()
+                .id(savedUser.getId())
+                .email(savedUser.getEmail())
+                .firstName(savedUser.getFirstName())
+                .lastName(savedUser.getLastName())
+                .profileId(savedUser.getProfileId())
+                .build();
+
+        kafkaProducer.sendMessage(registerUserLogDto,"user-registration");
 
         ResponseDto responseDto = new ResponseDto();
         responseDto.setStatus(true);

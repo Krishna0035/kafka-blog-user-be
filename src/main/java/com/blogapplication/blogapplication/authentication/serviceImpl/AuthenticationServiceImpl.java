@@ -10,6 +10,8 @@ import com.blogapplication.blogapplication.common.security.JwtUserDetailService;
 import com.blogapplication.blogapplication.common.security.JwtUtils;
 import com.blogapplication.blogapplication.common.utility.AuthenticationUtil;
 import com.blogapplication.blogapplication.common.utility.CommonUtils;
+import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
+import com.blogapplication.blogapplication.kafka.dto.LoginLogDto;
 import com.blogapplication.blogapplication.user.entity.User;
 import com.blogapplication.blogapplication.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -55,6 +58,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     private AuthenticationUtil authenticationUtil;
 
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
     @Override
     public ResponseDto loginWithPassword(LoginDto loginDto) {
         validateLoginRequestData(loginDto);
@@ -75,6 +81,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 //		UserDetails userDetails = jwtUserDetailService.loadUserByUsername(existedUser.getProfileId());
 
         ResponseDto responseDto = this.getJwtToken(existedUser, loginDto);
+
+        LoginLogDto loginLogDto = LoginLogDto.builder()
+                .loginAt(LocalDateTime.now())
+                .channel(loginDto.getChannel())
+                .id(existedUser.getId())
+                                .build();
+        kafkaProducer.sendMessage(loginLogDto,"user-login");
+
         return responseDto;
     }
 
