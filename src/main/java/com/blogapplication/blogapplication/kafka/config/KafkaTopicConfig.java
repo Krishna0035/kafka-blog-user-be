@@ -22,4 +22,11 @@ public class KafkaTopicConfig {
                 .name("user-registration")
                 .build();
     }
+
+    @Bean
+    public NewTopic createCreateBlogTopic(){
+        return TopicBuilder
+                .name("blog-details")
+                .build();
+    }
 }

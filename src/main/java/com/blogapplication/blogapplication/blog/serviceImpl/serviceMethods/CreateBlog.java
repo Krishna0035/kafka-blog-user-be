@@ -12,6 +12,8 @@ import com.blogapplication.blogapplication.blog.repositoty.CommentRepository;
 import com.blogapplication.blogapplication.common.cloudservice.service.UploadFileService;
 import com.blogapplication.blogapplication.common.exceptiom.ServiceException;
 import com.blogapplication.blogapplication.common.utility.AuthenticationUtil;
+import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
+import com.blogapplication.blogapplication.kafka.dto.BlogLogDto;
 import com.blogapplication.blogapplication.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -51,6 +53,9 @@ public class CreateBlog {
     @Autowired
     private UploadFileService uploadFileService;
 
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
     public ResponseDto createNewBlog(CreateBlogRequestDto request) {
         validateRequest.validateIncomingRequest(request);
 
@@ -65,7 +70,18 @@ public class CreateBlog {
         newBlogEntity.setCreatedBy(loggedInUser);
         newBlogEntity.setStatus(Integer.parseInt(environment.getProperty("active")));
 
-        blogRepository.save(newBlogEntity);
+        Blog savedBlog = blogRepository.save(newBlogEntity);
+
+        // send new blog data to kafka
+
+        BlogLogDto blogLogDto = BlogLogDto.builder()
+                .id(savedBlog.getId())
+                .title(savedBlog.getTitle())
+                .createdAt(savedBlog.getCreatedAt())
+                .createdBy(savedBlog.getCreatedBy().getId())
+                .build();
+
+        kafkaProducer.sendMessage(blogLogDto,"blog-details");
 
         ResponseDto responseDto = new ResponseDto();
 

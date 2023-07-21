@@ -154,11 +154,12 @@ public class GetBlog {
 
     private Integer viewDetailsOfBlog(Blog blog, User user){
 
-//        Optional<BlogViewDetails> previousView = blogViewDetailsRepository.findFirstByBlogIdAndViewedByIdOrderByViewedAtDesc(blog.getId(), user.getId());
+        Optional<BlogViewDetails> previousView = blogViewDetailsRepository.findFirstByBlogIdAndViewedByIdOrderByViewedAtDesc(blog.getId(), user.getId());
 
-//        if(previousView.isEmpty()){
-        saveNewView(blog, user);
-//        }
+        if(previousView.isEmpty()){
+            saveNewView(blog, user);
+            // send view data to kafka
+        }
 
         return getBlogViews(blog.getId());
     }
