@@ -15,12 +15,12 @@ import com.google.gson.annotations.SerializedName;
 @NoArgsConstructor
 public class LoginLogDto {
 
-    @SerializedName("id")
+//    @SerializedName("id")
     private Long id;
 
-    @SerializedName("loginAt")
-    private String loginAt;
+//    @SerializedName("loginAt")
+    private LocalDateTime loginAt;
 
-    @SerializedName("channel")
+//    @SerializedName("channel")
     private String channel;
 }

@@ -83,7 +83,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         ResponseDto responseDto = this.getJwtToken(existedUser, loginDto);
 
         LoginLogDto loginLogDto = LoginLogDto.builder()
-                .loginAt(LocalDateTime.now().toString())
+                .loginAt(LocalDateTime.now())
                 .channel(loginDto.getChannel())
                 .id(existedUser.getId())
                                 .build();

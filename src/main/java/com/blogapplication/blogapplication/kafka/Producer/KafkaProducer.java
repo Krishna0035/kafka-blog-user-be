@@ -14,14 +14,14 @@ public class KafkaProducer {
     private KafkaTemplate<String ,String> kafkaTemplate;
 
 
-    public void sendMessage(Object user,String topic){
+    public void sendMessage(Object object,String topic){
 
 //        Message<Object> message = MessageBuilder.withPayload(user).setHeader(KafkaHeaders.TOPIC,"demo").build();
 
-//        kafkaTemplate.send(topic,user.toString());
+//        kafkaTemplate.send(topic,object);
 
         Gson gson = new Gson();
-        String jsonMessage = gson.toJson(user);
+        String jsonMessage = gson.toJson(object);
         kafkaTemplate.send(topic, jsonMessage);
 
     }
