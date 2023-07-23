@@ -6,7 +6,9 @@ import com.blogapplication.blogapplication.common.exceptiom.ServiceException;
 import com.blogapplication.blogapplication.common.utility.AuthenticationUtil;
 import com.blogapplication.blogapplication.common.utility.CommonUtils;
 import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
+import com.blogapplication.blogapplication.kafka.common.UserActivityProducer;
 import com.blogapplication.blogapplication.kafka.dto.RegisterUserLogDto;
+import com.blogapplication.blogapplication.kafka.dto.UserActivityLogDto;
 import com.blogapplication.blogapplication.user.dto.CreateUserRequestDto;
 import com.blogapplication.blogapplication.user.entity.User;
 import com.blogapplication.blogapplication.user.repository.UserRepository;
@@ -37,6 +39,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private KafkaProducer kafkaProducer;
+    @Autowired
+    private UserActivityProducer userActivityProducer;
 
 
     @Override
@@ -62,6 +66,8 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         kafkaProducer.sendMessage(registerUserLogDto,"user-registration");
+        userActivityProducer.sendUserActivity(savedUser.getId(),"create-user");
+
 
         ResponseDto responseDto = new ResponseDto();
         responseDto.setStatus(true);
@@ -75,6 +81,8 @@ public class UserServiceImpl implements UserService {
         User user = authenticationUtil.currentLoggedInUser().getUser();
 
         GetUserResponseDto getUserResponseDto = new GetUserResponseDto(user);
+        userActivityProducer.sendUserActivity(user.getId(),"get-user");
+
 
         ResponseDto responseDto = new ResponseDto();
         responseDto.setStatus(true);

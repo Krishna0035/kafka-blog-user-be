@@ -11,6 +11,7 @@ import com.blogapplication.blogapplication.common.security.JwtUtils;
 import com.blogapplication.blogapplication.common.utility.AuthenticationUtil;
 import com.blogapplication.blogapplication.common.utility.CommonUtils;
 import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
+import com.blogapplication.blogapplication.kafka.common.UserActivityProducer;
 import com.blogapplication.blogapplication.kafka.dto.LoginLogDto;
 import com.blogapplication.blogapplication.user.entity.User;
 import com.blogapplication.blogapplication.user.repository.UserRepository;
@@ -60,6 +61,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
     private KafkaProducer kafkaProducer;
+    @Autowired
+    private UserActivityProducer userActivityProducer;
 
     @Override
     public ResponseDto loginWithPassword(LoginDto loginDto) {
@@ -88,6 +91,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .id(existedUser.getId())
                                 .build();
         kafkaProducer.sendMessage(loginLogDto,"user-login");
+        userActivityProducer.sendUserActivity(existedUserOptional.get().getId(),"user-login");
 
         return responseDto;
     }
@@ -108,6 +112,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         existedToken.setLogoutTime(LocalDateTime.now());
 
         userLoginTokenRepository.save(existedToken);
+        userActivityProducer.sendUserActivity(existedToken.getId(),"user-logout");
+
 
         responseDto.setStatus(true);
         responseDto.setMessage("SUCCESSFULL");
