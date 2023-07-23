@@ -16,6 +16,11 @@ import com.blogapplication.blogapplication.blog.specification.BlogSpecification;
 import com.blogapplication.blogapplication.common.dto.SeacrhCriteria;
 import com.blogapplication.blogapplication.common.exceptiom.ServiceException;
 import com.blogapplication.blogapplication.common.utility.AuthenticationUtil;
+import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
+import com.blogapplication.blogapplication.kafka.common.BlogActivityProducer;
+import com.blogapplication.blogapplication.kafka.dto.BlogLikeLogDto;
+import com.blogapplication.blogapplication.kafka.dto.BlogViewLogDto;
+import com.blogapplication.blogapplication.kafka.enums.BlogActivity;
 import com.blogapplication.blogapplication.user.entity.User;
 import com.blogapplication.blogapplication.user.serviceImpl.serviceMethods.LoggedInUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +72,12 @@ public class GetBlog {
 
     @Autowired
     private LoggedInUser loggedInUser;
+
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
+    @Autowired
+    private BlogActivityProducer blogActivityProducer;
 
     @Transactional
     public ResponseDto getABlog(GetBlogRequestDto request) {
@@ -160,6 +171,16 @@ public class GetBlog {
             saveNewView(blog, user);
             // send view data to kafka
         }
+
+        BlogViewLogDto blogViewLogDto = BlogViewLogDto.builder()
+                .blogId(blog.getId())
+                .viewedBy(user.getId())
+                .viewedAt(LocalDateTime.now())
+                .build();
+
+        kafkaProducer.sendMessage(blogViewLogDto,"blog-view-details");
+        blogActivityProducer.sendBlogActivity(blog.getId(), user.getId(), BlogActivity.VIEW.getValue());
+
 
         return getBlogViews(blog.getId());
     }

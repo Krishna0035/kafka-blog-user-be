@@ -11,6 +11,10 @@ import com.blogapplication.blogapplication.blog.repositoty.BlogViewDetailsReposi
 import com.blogapplication.blogapplication.blog.repositoty.CommentRepository;
 import com.blogapplication.blogapplication.common.exceptiom.ServiceException;
 import com.blogapplication.blogapplication.common.utility.AuthenticationUtil;
+import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
+import com.blogapplication.blogapplication.kafka.common.BlogActivityProducer;
+import com.blogapplication.blogapplication.kafka.dto.BlogLikeLogDto;
+import com.blogapplication.blogapplication.kafka.enums.BlogActivity;
 import com.blogapplication.blogapplication.user.entity.User;
 import com.blogapplication.blogapplication.user.serviceImpl.serviceMethods.LoggedInUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +52,12 @@ public class ReactBlog {
 
     @Autowired
     private LoggedInUser loggedInUser;
+
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
+    @Autowired
+    private BlogActivityProducer blogActivityProducer;
 
     public ResponseDto reactABlog(ReactBlogRequestDto request){
 
@@ -111,6 +121,16 @@ public class ReactBlog {
 
         reaction.setReactedAt(LocalDateTime.now(ZoneId.of("UTC")));
         blogReactedDetailsRepository.save(reaction);
+
+        BlogLikeLogDto blogLikeLogDto = BlogLikeLogDto.builder()
+                .blogId(existedBlog.getId())
+                .likedBy(user.getId())
+                .likedAt(LocalDateTime.now())
+                .build();
+
+        kafkaProducer.sendMessage(blogLikeLogDto,"blog-like-details");
+        blogActivityProducer.sendBlogActivity(existedBlog.getId(), user.getId(), BlogActivity.LIKE.getValue());
+
 
         ResponseDto responseDto = new ResponseDto();
         responseDto.setData(environment.getProperty("reactionAdded"));
