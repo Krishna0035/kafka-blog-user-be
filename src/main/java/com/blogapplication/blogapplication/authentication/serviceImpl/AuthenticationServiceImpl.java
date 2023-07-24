@@ -13,6 +13,7 @@ import com.blogapplication.blogapplication.common.utility.CommonUtils;
 import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
 import com.blogapplication.blogapplication.kafka.common.UserActivityProducer;
 import com.blogapplication.blogapplication.kafka.dto.LoginLogDto;
+import com.blogapplication.blogapplication.kafka.enums.UserActivity;
 import com.blogapplication.blogapplication.user.entity.User;
 import com.blogapplication.blogapplication.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .id(existedUser.getId())
                                 .build();
         kafkaProducer.sendMessage(loginLogDto,"user-login");
-        userActivityProducer.sendUserActivity(existedUserOptional.get().getId(),"user-login");
+        userActivityProducer.sendUserActivity(existedUserOptional.get().getId(), UserActivity.LOGIN.getValue());
 
         return responseDto;
     }

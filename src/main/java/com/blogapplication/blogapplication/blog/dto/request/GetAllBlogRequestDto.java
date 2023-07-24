@@ -1,6 +1,7 @@
 package com.blogapplication.blogapplication.blog.dto.request;
 
 import com.blogapplication.blogapplication.blog.enums.BlogSearchField;
+import com.blogapplication.blogapplication.blog.enums.BlogSortField;
 import com.blogapplication.blogapplication.common.exceptiom.ServiceException;
 import lombok.Data;
 
@@ -59,7 +60,7 @@ public class GetAllBlogRequestDto {
 
 
 
-        if(!Objects.isNull(sortBy) && !sortBy.trim().equalsIgnoreCase("") && Objects.isNull(BlogSearchField.valueOf(sortBy.toUpperCase()))){
+        if(!Objects.isNull(sortBy) && !sortBy.trim().equalsIgnoreCase("") && Objects.isNull(BlogSortField.valueOf(sortBy.toUpperCase()))){
             errorObject.put("Sort By","Invalid sort by fields");
 //            throw new ServiceException(sortBy+" invalid sort by field");
         }

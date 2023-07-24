@@ -18,9 +18,11 @@ import com.blogapplication.blogapplication.common.exceptiom.ServiceException;
 import com.blogapplication.blogapplication.common.utility.AuthenticationUtil;
 import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
 import com.blogapplication.blogapplication.kafka.common.BlogActivityProducer;
+import com.blogapplication.blogapplication.kafka.common.UserActivityProducer;
 import com.blogapplication.blogapplication.kafka.dto.BlogLikeLogDto;
 import com.blogapplication.blogapplication.kafka.dto.BlogViewLogDto;
 import com.blogapplication.blogapplication.kafka.enums.BlogActivity;
+import com.blogapplication.blogapplication.kafka.enums.UserActivity;
 import com.blogapplication.blogapplication.user.entity.User;
 import com.blogapplication.blogapplication.user.serviceImpl.serviceMethods.LoggedInUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +80,10 @@ public class GetBlog {
 
     @Autowired
     private BlogActivityProducer blogActivityProducer;
+
+
+    @Autowired
+    private UserActivityProducer userActivityProducer;
 
     @Transactional
     public ResponseDto getABlog(GetBlogRequestDto request) {
@@ -180,7 +186,7 @@ public class GetBlog {
 
         kafkaProducer.sendMessage(blogViewLogDto,"blog-view-details");
         blogActivityProducer.sendBlogActivity(blog.getId(), user.getId(), BlogActivity.VIEW.getValue());
-
+        userActivityProducer.sendUserActivity(user.getId(), UserActivity.VIEW_BLOG.getValue());
 
         return getBlogViews(blog.getId());
     }

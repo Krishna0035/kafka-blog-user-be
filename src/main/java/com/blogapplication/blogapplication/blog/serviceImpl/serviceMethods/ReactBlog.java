@@ -13,8 +13,10 @@ import com.blogapplication.blogapplication.common.exceptiom.ServiceException;
 import com.blogapplication.blogapplication.common.utility.AuthenticationUtil;
 import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
 import com.blogapplication.blogapplication.kafka.common.BlogActivityProducer;
+import com.blogapplication.blogapplication.kafka.common.UserActivityProducer;
 import com.blogapplication.blogapplication.kafka.dto.BlogLikeLogDto;
 import com.blogapplication.blogapplication.kafka.enums.BlogActivity;
+import com.blogapplication.blogapplication.kafka.enums.UserActivity;
 import com.blogapplication.blogapplication.user.entity.User;
 import com.blogapplication.blogapplication.user.serviceImpl.serviceMethods.LoggedInUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,9 @@ public class ReactBlog {
 
     @Autowired
     private BlogActivityProducer blogActivityProducer;
+
+    @Autowired
+    private UserActivityProducer userActivityProducer;
 
     public ResponseDto reactABlog(ReactBlogRequestDto request){
 
@@ -130,7 +135,7 @@ public class ReactBlog {
 
         kafkaProducer.sendMessage(blogLikeLogDto,"blog-like-details");
         blogActivityProducer.sendBlogActivity(existedBlog.getId(), user.getId(), BlogActivity.LIKE.getValue());
-
+        userActivityProducer.sendUserActivity(user.getId(), UserActivity.LIKE_BLOG.getValue());
 
         ResponseDto responseDto = new ResponseDto();
         responseDto.setData(environment.getProperty("reactionAdded"));

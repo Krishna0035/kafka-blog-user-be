@@ -14,8 +14,10 @@ import com.blogapplication.blogapplication.common.exceptiom.ServiceException;
 import com.blogapplication.blogapplication.common.utility.AuthenticationUtil;
 import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
 import com.blogapplication.blogapplication.kafka.common.BlogActivityProducer;
+import com.blogapplication.blogapplication.kafka.common.UserActivityProducer;
 import com.blogapplication.blogapplication.kafka.dto.BlogLogDto;
 import com.blogapplication.blogapplication.kafka.enums.BlogActivity;
+import com.blogapplication.blogapplication.kafka.enums.UserActivity;
 import com.blogapplication.blogapplication.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -61,6 +63,9 @@ public class CreateBlog {
     @Autowired
     private BlogActivityProducer blogActivityProducer;
 
+    @Autowired
+    private UserActivityProducer userActivityProducer;
+
     public ResponseDto createNewBlog(CreateBlogRequestDto request) {
         validateRequest.validateIncomingRequest(request);
 
@@ -68,9 +73,9 @@ public class CreateBlog {
 
         Blog newBlogEntity = request.getNewBlogEntity(getCategoryById(request.getCategoryId()));
 
-        String image = uploadImage(request.getBlogImageBase64Code());
+//        String image = uploadImage(request.getBlogImageBase64Code());
 
-        newBlogEntity.setImage(image);
+        newBlogEntity.setImage(request.getBlogImageBase64Code());
 
         newBlogEntity.setCreatedBy(loggedInUser);
         newBlogEntity.setStatus(Integer.parseInt(environment.getProperty("active")));
@@ -88,7 +93,7 @@ public class CreateBlog {
 
         kafkaProducer.sendMessage(blogLogDto,"blog-details");
         blogActivityProducer.sendBlogActivity(savedBlog.getId(), savedBlog.getCreatedBy().getId(), BlogActivity.CREATE.getValue());
-
+        userActivityProducer.sendUserActivity(savedBlog.getCreatedBy().getId(), UserActivity.CREATE_BLOG.getValue());
 
         ResponseDto responseDto = new ResponseDto();
 
