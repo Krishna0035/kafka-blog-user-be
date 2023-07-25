@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.checkerframework.common.value.qual.ArrayLen;
 
 import java.time.LocalDateTime;
 
@@ -12,17 +13,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class BlogLogDto {
+public class HitLogDto {
 
-    private Long id;
+    private String pageInfo;
 
-    private String title;
+    private LocalDateTime hitAt;
 
-    private LocalDateTime createdAt;
-
-    private Long createdBy;
-
-    private String createdByName;
-
-    private String description;
 }

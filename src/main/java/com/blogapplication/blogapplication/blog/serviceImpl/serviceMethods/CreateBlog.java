@@ -89,6 +89,8 @@ public class CreateBlog {
                 .title(savedBlog.getTitle())
                 .createdAt(savedBlog.getCreatedAt())
                 .createdBy(savedBlog.getCreatedBy().getId())
+                .createdByName(savedBlog.getCreatedBy().getFirstName()+" "+savedBlog.getCreatedBy().getLastName())
+                .description(savedBlog.getDescription())
                 .build();
 
         kafkaProducer.sendMessage(blogLogDto,"blog-details");

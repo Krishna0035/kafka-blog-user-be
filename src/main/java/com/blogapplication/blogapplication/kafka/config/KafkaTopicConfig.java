@@ -51,4 +51,11 @@ public class KafkaTopicConfig {
                 .name("blog-activity-details")
                 .build();
     }
+
+    @Bean
+    public NewTopic createHitTopic(){
+        return TopicBuilder
+                .name("hits-details")
+                .build();
+    }
 }
