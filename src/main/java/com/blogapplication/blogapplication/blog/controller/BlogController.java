@@ -79,4 +79,10 @@ public class BlogController {
         ResponseDto allTrendingBlog = blogService.getAllBlogs(request);
         return  new ResponseEntity<>(allTrendingBlog,HttpStatus.OK);
     }
+
+    @GetMapping("/get-all-blogs")
+    public ResponseEntity<ResponseDto> getAllBlog(){
+        ResponseDto allTrendingBlog = blogService.getAllBlog();
+        return  new ResponseEntity<>(allTrendingBlog,HttpStatus.OK);
+    }
 }

@@ -538,6 +538,8 @@ public class BlogServiceImpl implements BlogService {
     }
 
 
+
+
     private Comment getCommentEntity(PostCommentRequestDto request,Blog blog,User loggedInUser){
 
         Comment comment = new Comment();
@@ -603,5 +605,24 @@ public class BlogServiceImpl implements BlogService {
         else {
             throw new ServiceException("PROCESS_ERROR");
         }
+    }
+
+    @Override
+    public ResponseDto getAllBlog() {
+
+        List<Blog> allBlogs = blogRepository.findAll();
+
+        List<GetAllBlogs> responseGetAllBlog = allBlogs.stream().map(e -> {
+            return GetAllBlogs
+                    .builder()
+                    .name("Mukul Kumar")
+                    .BlogId(e.getId())
+                    .avatar(e.getImage())
+                    .Role("software Engineer")
+                    .content(e.getDescription())
+                    .build();
+        }).collect(Collectors.toList());
+
+        return ResponseDto.builder().data(responseGetAllBlog).status(true).message("success").build();
     }
 }
