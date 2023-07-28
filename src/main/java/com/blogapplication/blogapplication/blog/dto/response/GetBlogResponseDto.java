@@ -24,6 +24,8 @@ public class GetBlogResponseDto {
 
     private Long createdBy;
 
+    private String createdByName;
+
     private Integer ownReaction;
 
     private boolean edited;
