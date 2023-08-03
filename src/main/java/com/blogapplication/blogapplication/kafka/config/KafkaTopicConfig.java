@@ -58,4 +58,11 @@ public class KafkaTopicConfig {
                 .name("hits-details")
                 .build();
     }
+
+    @Bean
+    public NewTopic createPartitionTopic(){
+        return TopicBuilder
+                .name("email_1")
+                .build();
+    }
 }

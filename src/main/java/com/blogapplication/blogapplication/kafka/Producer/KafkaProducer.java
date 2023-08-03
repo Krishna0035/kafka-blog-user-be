@@ -25,4 +25,16 @@ public class KafkaProducer {
         kafkaTemplate.send(topic, jsonMessage);
 
     }
+
+    public void sendMessage(Object object,String topic,Integer partition){
+
+//        Message<Object> message = MessageBuilder.withPayload(user).setHeader(KafkaHeaders.TOPIC,"demo").build();
+
+//        kafkaTemplate.send(topic,object);
+
+        Gson gson = new Gson();
+        String jsonMessage = gson.toJson(object);
+        kafkaTemplate.send(topic,partition,null, jsonMessage);
+
+    }
 }

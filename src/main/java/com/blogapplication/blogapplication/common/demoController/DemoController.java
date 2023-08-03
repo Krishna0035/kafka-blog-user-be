@@ -3,6 +3,7 @@ package com.blogapplication.blogapplication.common.demoController;
 import com.blogapplication.blogapplication.common.cloudservice.service.UploadFileService;
 import com.blogapplication.blogapplication.common.dto.demodto.ImageUploadDto;
 import com.blogapplication.blogapplication.firebaseservice.ImageService;
+import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
 import io.swagger.annotations.Authorization;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class DemoController {
     @Autowired
     private UploadFileService uploadFile;
 
+    @Autowired
+    KafkaProducer kafkaProducer;
+
     @GetMapping("/test")
     public String test(){
         return "Hello world";
@@ -37,5 +41,11 @@ public class DemoController {
     public String uploadFile(@RequestParam("image")MultipartFile multipartFile) throws IOException {
         String imageURL = uploadFile.uploadFile(multipartFile,"Blog category");
         return imageURL;
+    }
+
+    @PostMapping("/kafka/{topic}/{partition}")
+    public String kafkaTest(@RequestBody String data,@PathVariable("topic") String topic,Integer partition){
+        kafkaProducer.sendMessage(data,topic,partition);
+        return "succees";
     }
 }
