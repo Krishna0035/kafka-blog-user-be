@@ -3,6 +3,7 @@ package com.blogapplication.blogapplication.kafka.common;
 
 import com.blogapplication.blogapplication.kafka.Producer.KafkaProducer;
 import com.blogapplication.blogapplication.kafka.dto.BlogActivityLogDto;
+import com.blogapplication.blogapplication.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,13 +17,14 @@ public class BlogActivityProducer {
 
 
 
-    public void sendBlogActivity(Long blogId,Long userId,String activity){
+    public void sendBlogActivity(Long blogId, User user, String activity){
 
         BlogActivityLogDto blogActivityLogDto = BlogActivityLogDto.builder()
-                .activityBy(userId)
+                .activityBy(user.getId())
                 .blogId(blogId)
                 .activity(activity)
                 .activityAt(LocalDateTime.now())
+                .activityByName(user.getFirstName()+" "+user.getLastName())
                 .build();
         kafkaProducer.sendMessage(blogActivityLogDto,"blog-activity-details");
     }

@@ -131,11 +131,12 @@ public class ReactBlog {
                 .blogId(existedBlog.getId())
                 .likedBy(user.getId())
                 .likedAt(LocalDateTime.now())
+                .activityByName(user.getFirstName()+" "+user.getLastName())
                 .build();
 
         kafkaProducer.sendMessage(blogLikeLogDto,"blog-like-details");
-        blogActivityProducer.sendBlogActivity(existedBlog.getId(), user.getId(), BlogActivity.LIKE.getValue());
-        userActivityProducer.sendUserActivity(user.getId(), UserActivity.LIKE_BLOG.getValue());
+        blogActivityProducer.sendBlogActivity(existedBlog.getId(), user, BlogActivity.LIKE.getValue());
+        userActivityProducer.sendUserActivity(user, UserActivity.LIKE_BLOG.getValue());
 
         ResponseDto responseDto = new ResponseDto();
         responseDto.setData(environment.getProperty("reactionAdded"));

@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         kafkaProducer.sendMessage(registerUserLogDto,"user-registration");
-        userActivityProducer.sendUserActivity(savedUser.getId(),"create-user");
+        userActivityProducer.sendUserActivity(savedUser,"create-user");
 
 
         ResponseDto responseDto = new ResponseDto();
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
         User user = authenticationUtil.currentLoggedInUser().getUser();
 
         GetUserResponseDto getUserResponseDto = new GetUserResponseDto(user);
-        userActivityProducer.sendUserActivity(user.getId(),"get-user");
+        userActivityProducer.sendUserActivity(user,"get-user");
 
 
         ResponseDto responseDto = new ResponseDto();

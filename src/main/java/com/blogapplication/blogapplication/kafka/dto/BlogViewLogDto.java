@@ -17,6 +17,7 @@ public class BlogViewLogDto {
     private Long blogId;
 
     private Long viewedBy;
+    private String activityByName;
 
     private LocalDateTime viewedAt;
 

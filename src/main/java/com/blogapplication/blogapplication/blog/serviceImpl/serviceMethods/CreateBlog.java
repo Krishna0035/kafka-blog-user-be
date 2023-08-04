@@ -94,8 +94,8 @@ public class CreateBlog {
                 .build();
 
         kafkaProducer.sendMessage(blogLogDto,"blog-details");
-        blogActivityProducer.sendBlogActivity(savedBlog.getId(), savedBlog.getCreatedBy().getId(), BlogActivity.CREATE.getValue());
-        userActivityProducer.sendUserActivity(savedBlog.getCreatedBy().getId(), UserActivity.CREATE_BLOG.getValue());
+        blogActivityProducer.sendBlogActivity(savedBlog.getId(), savedBlog.getCreatedBy(), BlogActivity.CREATE.getValue());
+        userActivityProducer.sendUserActivity(savedBlog.getCreatedBy(), UserActivity.CREATE_BLOG.getValue());
 
         ResponseDto responseDto = new ResponseDto();
 

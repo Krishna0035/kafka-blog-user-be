@@ -92,7 +92,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .id(existedUser.getId())
                                 .build();
         kafkaProducer.sendMessage(loginLogDto,"user-login");
-        userActivityProducer.sendUserActivity(existedUserOptional.get().getId(), UserActivity.LOGIN.getValue());
+        userActivityProducer.sendUserActivity(existedUserOptional.get(), UserActivity.LOGIN.getValue());
 
         return responseDto;
     }
@@ -113,7 +113,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         existedToken.setLogoutTime(LocalDateTime.now());
 
         userLoginTokenRepository.save(existedToken);
-        userActivityProducer.sendUserActivity(existedToken.getId(),"user-logout");
+        userActivityProducer.sendUserActivity(user,"user-logout");
 
 
         responseDto.setStatus(true);

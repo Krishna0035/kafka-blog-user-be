@@ -182,11 +182,12 @@ public class GetBlog {
                 .blogId(blog.getId())
                 .viewedBy(user.getId())
                 .viewedAt(LocalDateTime.now())
+                .activityByName(user.getFirstName()+" "+user.getLastName())
                 .build();
 
         kafkaProducer.sendMessage(blogViewLogDto,"blog-view-details");
-        blogActivityProducer.sendBlogActivity(blog.getId(), user.getId(), BlogActivity.VIEW.getValue());
-        userActivityProducer.sendUserActivity(user.getId(), UserActivity.VIEW_BLOG.getValue());
+        blogActivityProducer.sendBlogActivity(blog.getId(), user, BlogActivity.VIEW.getValue());
+        userActivityProducer.sendUserActivity(user, UserActivity.VIEW_BLOG.getValue());
 
         return getBlogViews(blog.getId());
     }
