@@ -20,10 +20,11 @@ public class KafkaProducer {
 
 //        kafkaTemplate.send(topic,object);
 
+
         Gson gson = new Gson();
         String jsonMessage = gson.toJson(object);
         kafkaTemplate.send(topic, jsonMessage);
-
+        System.out.println("send data to kafka :  " + object);
     }
 
     public void sendMessage(Object object,String topic,Integer partition){
@@ -35,6 +36,6 @@ public class KafkaProducer {
         Gson gson = new Gson();
         String jsonMessage = gson.toJson(object);
         kafkaTemplate.send(topic,partition,null, jsonMessage);
-
+        System.out.println("send data to kafka :  " + object);
     }
 }
