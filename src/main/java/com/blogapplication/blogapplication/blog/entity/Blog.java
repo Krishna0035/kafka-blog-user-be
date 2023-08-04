@@ -29,6 +29,8 @@ public class Blog {
 
     private Boolean featured;
 
+    private String summery;
+
 //    @ElementCollection // 1
 //    @CollectionTable(name = "image_list", joinColumns = @JoinColumn(name = "blog_id")) // 2
 //    @Column(name = "image") // 3

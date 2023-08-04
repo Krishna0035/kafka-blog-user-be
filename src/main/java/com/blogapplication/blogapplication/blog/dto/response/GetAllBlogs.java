@@ -16,4 +16,5 @@ public class GetAllBlogs {
     private String Role;
     private String content;
     private String avatar;
+    private String title;
 }

@@ -615,11 +615,12 @@ public class BlogServiceImpl implements BlogService {
         List<GetAllBlogs> responseGetAllBlog = allBlogs.stream().map(e -> {
             return GetAllBlogs
                     .builder()
-                    .name("Mukul Kumar")
+                    .title(e.getTitle())
+                    .name(e.getCreatedBy().getFirstName() + " " + e.getCreatedBy().getLastName())
                     .BlogId(e.getId())
                     .avatar(e.getImage())
                     .Role("software Engineer")
-                    .content(e.getDescription())
+                    .content(e.getDescription().substring(0,170)+ "...")
                     .build();
         }).collect(Collectors.toList());
 
