@@ -86,7 +86,7 @@ public class GetBlog {
     private UserActivityProducer userActivityProducer;
 
     @Transactional
-    public ResponseDto getABlog(GetBlogRequestDto request) {
+    public ResponseDto getABlog(GetBlogRequestDto request,boolean internal) {
 
         validateRequest.validateIncomingRequest(request);
 
@@ -101,7 +101,7 @@ public class GetBlog {
 
         Optional<BlogReactionDetails> reaction = blogReactedDetailsRepository.findByBlogIdAndReactedByIdAndIsReacted(existedBlog.getId(), user.getId(), true);
 
-        GetBlogResponseDto blogResponseDto = this.getBlogResponseDto(existedBlog,user ,reaction);
+        GetBlogResponseDto blogResponseDto = this.getBlogResponseDto(existedBlog,user ,reaction,internal);
 
 
         ResponseDto responseDto = new ResponseDto();
@@ -113,7 +113,7 @@ public class GetBlog {
     }
 
 
-    private GetBlogResponseDto getBlogResponseDto(Blog blog,User loggedInUser, Optional<BlogReactionDetails> reaction){
+    private GetBlogResponseDto getBlogResponseDto(Blog blog,User loggedInUser, Optional<BlogReactionDetails> reaction,boolean internal){
 
         GetBlogResponseDto blogResponseDto = new GetBlogResponseDto();
 
@@ -126,7 +126,7 @@ public class GetBlog {
         blogResponseDto.setCreatedBy(blog.getCreatedBy().getId());
         blogResponseDto.setCreatedAt(blog.getCreatedAt().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
         blogResponseDto.setEdited(!blog.getUpdatedAt().isEqual(blog.getCreatedAt()));
-        blogResponseDto.setViews(this.viewDetailsOfBlog(blog,loggedInUser));
+        blogResponseDto.setViews(this.viewDetailsOfBlog(blog,loggedInUser,internal));
         List<ReactionDto> allReactions = this.getAllReactions(blog);
         blogResponseDto.setReactionList(allReactions);
         blogResponseDto.setReactionCount(allReactions.size());
@@ -169,7 +169,7 @@ public class GetBlog {
     }
 
 
-    private Integer viewDetailsOfBlog(Blog blog, User user){
+    private Integer viewDetailsOfBlog(Blog blog, User user,boolean internal){
 
         Optional<BlogViewDetails> previousView = blogViewDetailsRepository.findFirstByBlogIdAndViewedByIdOrderByViewedAtDesc(blog.getId(), user.getId());
 
@@ -185,9 +185,11 @@ public class GetBlog {
                 .activityByName(user.getFirstName()+" "+user.getLastName())
                 .build();
 
-        kafkaProducer.sendMessage(blogViewLogDto,"blog-view-details");
-        blogActivityProducer.sendBlogActivity(blog.getId(), user, BlogActivity.VIEW.getValue());
-        userActivityProducer.sendUserActivity(user, UserActivity.VIEW_BLOG.getValue());
+      if(!internal){
+          kafkaProducer.sendMessage(blogViewLogDto,"blog-view-details");
+          blogActivityProducer.sendBlogActivity(blog.getId(), user, BlogActivity.VIEW.getValue());
+          userActivityProducer.sendUserActivity(user, UserActivity.VIEW_BLOG.getValue());
+      }
 
         return getBlogViews(blog.getId());
     }

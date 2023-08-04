@@ -81,7 +81,7 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public ResponseDto getABlog(GetBlogRequestDto request) {
 
-        return getBlog.getABlog(request);
+        return getBlog.getABlog(request,false);
     }
 
     @Override

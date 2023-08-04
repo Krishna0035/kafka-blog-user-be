@@ -1,6 +1,7 @@
 package com.blogapplication.blogapplication.blog.serviceImpl.serviceMethods;
 
 import com.blogapplication.blogapplication.authentication.dto.ResponseDto;
+import com.blogapplication.blogapplication.blog.dto.request.GetBlogRequestDto;
 import com.blogapplication.blogapplication.blog.dto.request.ReactBlogRequestDto;
 import com.blogapplication.blogapplication.blog.entity.Blog;
 import com.blogapplication.blogapplication.blog.entity.BlogReactionDetails;
@@ -63,6 +64,9 @@ public class ReactBlog {
 
     @Autowired
     private UserActivityProducer userActivityProducer;
+
+    @Autowired
+    private GetBlog getBlog;
 
     public ResponseDto reactABlog(ReactBlogRequestDto request){
 
@@ -138,11 +142,17 @@ public class ReactBlog {
         blogActivityProducer.sendBlogActivity(existedBlog.getId(), user, BlogActivity.LIKE.getValue());
         userActivityProducer.sendUserActivity(user, UserActivity.LIKE_BLOG.getValue());
 
-        ResponseDto responseDto = new ResponseDto();
-        responseDto.setData(environment.getProperty("reactionAdded"));
-        responseDto.setMessage(environment.getProperty("successResponse"));
-        responseDto.setStatus(true);
 
-        return responseDto;
+        GetBlogRequestDto getBlogRequestDto = new GetBlogRequestDto();
+        getBlogRequestDto.setId(request.getId());
+        ResponseDto aBlog = getBlog.getABlog(getBlogRequestDto,true);
+
+
+//        ResponseDto responseDto = new ResponseDto();
+//        responseDto.setData(environment.getProperty("reactionAdded"));
+//        responseDto.setMessage(environment.getProperty("successResponse"));
+//        responseDto.setStatus(true);
+
+        return aBlog;
     }
 }
