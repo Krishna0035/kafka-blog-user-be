@@ -131,7 +131,7 @@ public class GetBlog {
         blogResponseDto.setReactionList(allReactions);
         blogResponseDto.setReactionCount(allReactions.size());
         blogResponseDto.setComments(this.getBlogCommentsByBlogId(blog.getId()));
-        blogResponseDto.setCreatedByName(loggedInUser.getFirstName()+" "+loggedInUser.getLastName());
+        blogResponseDto.setCreatedByName(blog.getCreatedBy().getFirstName()+" "+blog.getCreatedBy().getLastName());
 
         if(reaction.isPresent() && reaction.get().getIsReacted()){
             switch (reaction.get().getReaction()){
